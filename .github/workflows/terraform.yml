@@ -22,14 +22,12 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: .terraform  # Specify the path if .tf files are in a subdirectory
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan
-
-      - name: Terraform Apply (Optional)
-        run: terraform apply -auto-approve tfplan
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        working-directory: .terraform  # Same as above
 
       - name: Create Pull Request
         if: success() # Only create a PR if the previous steps were successful
