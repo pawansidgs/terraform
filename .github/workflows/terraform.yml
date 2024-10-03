@@ -1,0 +1,42 @@
+name: Terraform Automation
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: 1.5.0 # Specify your required Terraform version
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply (Optional)
+        run: terraform apply -auto-approve tfplan
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+      - name: Create Pull Request
+        if: success() # Only create a PR if the previous steps were successful
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: "Merge develop into master"
+          body: "This PR is automatically generated from the develop branch."
+          base: master
+          head: develop
+          token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
