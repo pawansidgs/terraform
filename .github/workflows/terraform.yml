@@ -29,10 +29,6 @@ jobs:
         run: terraform plan -out=tfplan
         working-directory: ./terraform  # Same as above
 
-        - name: Terraform apply
-        run: terraform apply
-        working-directory: ./terraform  # Specify the path if .tf files are in a subdirectory
-
       - name: Create Pull Request
         if: success() # Only create a PR if the previous steps were successful
         uses: peter-evans/create-pull-request@v4
