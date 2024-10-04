@@ -18,7 +18,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2.0.0
         with:
-          terraform_version: 1.5.0 # Specify your required Terraform version
+          terraform_version: 1.5.0
 
       - name: Terraform Init
         run: terraform init
@@ -27,14 +27,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan
-        working-directory: ./terraform  # Same as above
+        working-directory: ./terraform
 
       - name: Create Pull Request
-        if: success() # Only create a PR if the previous steps were successful
-        uses: peter-evans/create-pull-request@v4
-        with:
-          title: "Merge develop into master"
-          body: "This PR is automatically generated from the develop branch."
-          base: master
-          head: develop
-          token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+        if: success()
+        run: gh pr create --title "Merge develop into master" --body "This PR is automatically generated from the develop branch." --base master --head develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
